@@ -20,7 +20,7 @@ class AuthController {
 
 		return res.status(200).json({ success: true, message: 'logged out' });
 	}
-	static async confirmAccount(req, re, next) {
+	static async confirmAccount(req, res, next) {
 		const token = req.params.token;
 		if (!token) {
 			throw ErrorResponse.badRequest('Invalide url');

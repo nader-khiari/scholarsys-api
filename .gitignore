@@ -1,3 +1,7 @@
 node_modules
 test.html
 testingTime.js
+
+.vscode
+
+public/users_images/*

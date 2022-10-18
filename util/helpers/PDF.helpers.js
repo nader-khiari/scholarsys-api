@@ -1,22 +1,23 @@
-const Classe = require('../../models/classe');
-const ErrorResponse = require('./ErrorResponse');
-const path = require('path');
-const sequelize = require('../../config/db.config');
-const puppeteer = require('puppeteer');
-const ejs = require('ejs');
-const { Op } = require('sequelize');
-const User = require('../../models/User/User');
-const { convertTime, calculateSeanceTime } = require('./helpers.util');
+const Classe = require("../../models/classe");
+const ErrorResponse = require("./ErrorResponse");
+const path = require("path");
+const sequelize = require("../../config/db.config");
+const puppeteer = require("puppeteer");
+const ejs = require("ejs");
+const { Op } = require("sequelize");
+const User = require("../../models/User/User");
+const { convertTime, calculateSeanceTime } = require("./helpers.util");
+const ROLES = require("../../config/roles");
 const folderName = {
-	teachers: 'teachers',
-	students: 'students'
+    teachers: "teachers",
+    students: "students",
 };
 const compile = async function (seances) {
-	const filePath = path.join(__dirname, 'pdf_template.ejs');
-	return await ejs.renderFile(filePath, { seances });
+    const filePath = path.join(__dirname, "pdf_template.ejs");
+    return await ejs.renderFile(filePath, { seances });
 };
 const generatePDF = async (obj, name, folderName) => {
-	/* const filePath = path.join(
+    /* const filePath = path.join(
 		__dirname,
 		'..',
 		'..',
@@ -26,42 +27,42 @@ const generatePDF = async (obj, name, folderName) => {
 		folderName,
 		`${name}.pdf`
 	); */
-	const filePath = path.join(
-		__dirname,
-		'..',
-		'..',
-		'public',
-		'emploi',
-		folderName,
-		`${name}.pdf`
-	);
-	console.log(filePath)
-	try {
-		const browser = await puppeteer.launch();
+    const filePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "public",
+        "emploi",
+        folderName,
+        `${name}.pdf`
+    );
+    console.log(filePath);
+    try {
+        const browser = await puppeteer.launch();
 
-		const page = await browser.newPage();
+        const page = await browser.newPage();
 
-		const content = await compile(obj);
+        const content = await compile(obj);
 
-		await page.setContent(content);
+        await page.setContent(content);
 
-		await page.pdf({
-			path: filePath,
-			format: 'A4',
-			printBackground: true
-		});
+        await page.pdf({
+            path: filePath,
+            format: "A4",
+            printBackground: true,
+        });
 
-		await browser.close();
-	} catch (e) {
-		console.log(e)
-		throw ErrorResponse.internalError();
-	}
+        await browser.close();
+    } catch (e) {
+        console.log(e);
+        throw ErrorResponse.internalError();
+    }
 };
 
 async function createEmploisTeachers() {
-	const classesId = await Classe.findAll();
-	const preparedQueries = classesId.map((classe) => {
-		return `select m.designation                            as                  matiere,
+    const classesId = await Classe.findAll();
+    const preparedQueries = classesId.map((classe) => {
+        return `select m.designation                            as                  matiere,
       			start_minute,
 	   			seance_duration,
 	  			start_hour,
@@ -75,71 +76,78 @@ async function createEmploisTeachers() {
 		         join matieres m on s.matiereId = m.id
 		where e.classeId = ${classe.id}
 		order by s.day , s.start_hour`;
-	});
-	preparedQueries.forEach(async (query) => {
-		console.log(query)
-		const [seances] = await sequelize.query(query);
-		if (seances.length === 0) {
-			throw ErrorResponse.internalError('data missing for a class');
-		}
-		const emploiName = seances[0].name.trim().replace(' ', '_');
-		const obj = {
-			emploiName,
-			lundi: [],
-			mardi: [],
-			mercredi: [],
-			jeudi: [],
-			vendredi: [],
-			samedi: []
-		};
-		seances.forEach((s) => {
-			const input = {
-				startHour: parseInt(s.start_hour),
-				startMinute: parseInt(s.start_minute)
-			};
+    });
+    preparedQueries.forEach(async (query) => {
+        console.log(query);
+        const [seances] = await sequelize.query(query);
+        if (seances.length === 0) {
+            throw ErrorResponse.internalError("data missing for a class");
+        }
+        const emploiName = seances[0].name.trim().replace(" ", "_");
+        const obj = {
+            emploiName,
+            lundi: [],
+            mardi: [],
+            mercredi: [],
+            jeudi: [],
+            vendredi: [],
+            samedi: [],
+        };
+        seances.forEach((s) => {
+            const input = {
+                startHour: parseInt(s.start_hour),
+                startMinute: parseInt(s.start_minute),
+            };
 
-			const inputTime = calculateSeanceTime(input, s.seance_duration);
-			const convertedInput = convertTime(inputTime);
+            const inputTime = calculateSeanceTime(input, s.seance_duration);
+            const convertedInput = convertTime(inputTime);
 
-			let convertedStartTime = convertedInput.startTime.toString().replace('.', 'h:');
-			let convertedEndTime = convertedInput.endTime.toString().replace('.', 'h:');
+            let convertedStartTime = convertedInput.startTime
+                .toString()
+                .replace(".", "h:");
+            let convertedEndTime = convertedInput.endTime
+                .toString()
+                .replace(".", "h:");
 
-			if (convertedStartTime.length === 5) {
-				convertedStartTime += '0';
-			}
+            if (convertedStartTime.length === 5) {
+                convertedStartTime += "0";
+            }
 
-			if (convertedEndTime.length === 5) {
-				convertedEndTime += '0';
-			}
-			s.startTime = convertedStartTime;
-			s.finishTime = convertedEndTime;
+            if (convertedEndTime.length === 5) {
+                convertedEndTime += "0";
+            }
+            s.startTime = convertedStartTime;
+            s.finishTime = convertedEndTime;
 
-			if (s.day === 'lundi') obj.lundi.push(s);
-			if (s.day === 'mardi') obj.mardi.push(s);
-			if (s.day === 'mercredi') obj.mercredi.push(s);
-			if (s.day === 'jeudi') obj.jeudi.push(s);
-			if (s.day === 'vendredi') obj.vendredi.push(s);
-			if (s.day === 'samedi') obj.samedi.push(s);
-		});
-		generatePDF(obj, emploiName, folderName.students);
-	});
+            if (s.day === "lundi") obj.lundi.push(s);
+            if (s.day === "mardi") obj.mardi.push(s);
+            if (s.day === "mercredi") obj.mercredi.push(s);
+            if (s.day === "jeudi") obj.jeudi.push(s);
+            if (s.day === "vendredi") obj.vendredi.push(s);
+            if (s.day === "samedi") obj.samedi.push(s);
+        });
+        generatePDF(obj, emploiName, folderName.students);
+    });
 
-	// TODO : i need to get only teachers id that have classesId
-	const teachers = await User.findAll({
-		attributes: ['specificData', 'id'],
-		where: {
-			[Op.and]: [{ role: 666 }, { specificData: { [Op.not]: null } }]
-		}
-	});
+    // TODO : i need to get only teachers id that have classesId
+    const teachers = await User.findAll({
+        attributes: ["specificData", "id"],
+        where: {
+            [Op.and]: [
+                { role: ROLES.TEACHER },
+                { specificData: { [Op.not]: null } },
+            ],
+        },
+    });
 
-	const teachersId = teachers.map((teacher) => {
-		const obj = JSON.parse(JSON.parse(teacher.specificData));
-		console.log(obj)
-		if (obj.classesId.length !== 0) return teacher.id;
-	});
+    const teachersId = teachers.map((teacher) => {
+        const obj = JSON.parse(JSON.parse(teacher.specificData));
+        console.log(obj);
+        if (obj.classesId.length !== 0) return teacher.id;
+    });
 
-	const preparedQueriesTeachers = teachersId.map((id) => {
-		return `select m.designation                            as                  matiere,
+    const preparedQueriesTeachers = teachersId.map((id) => {
+        return `select m.designation                            as                  matiere,
          start_minute,
 		   seance_duration,
 		   start_hour,
@@ -153,62 +161,66 @@ async function createEmploisTeachers() {
 	         join salles s2 on s.salleId = s2.id
 	         join matieres m on s.matiereId = m.id
 	where s.teacherId = ${id}`;
-	});
+    });
 
-	try {
-		preparedQueriesTeachers.forEach(async (query) => {
-			let emploiName;
-			const [seances] = await sequelize.query(query);
-			const obj = {
-				lundi: [],
-				mardi: [],
-				mercredi: [],
-				jeudi: [],
-				vendredi: [],
-				samedi: []
-			};
-			seances.forEach((s) => {
-				const input = {
-					startHour: parseInt(s.start_hour),
-					startMinute: parseInt(s.start_minute)
-				};
+    try {
+        preparedQueriesTeachers.forEach(async (query) => {
+            let emploiName;
+            const [seances] = await sequelize.query(query);
+            const obj = {
+                lundi: [],
+                mardi: [],
+                mercredi: [],
+                jeudi: [],
+                vendredi: [],
+                samedi: [],
+            };
+            seances.forEach((s) => {
+                const input = {
+                    startHour: parseInt(s.start_hour),
+                    startMinute: parseInt(s.start_minute),
+                };
 
-				const inputTime = calculateSeanceTime(input, s.seance_duration);
-				const convertedInput = convertTime(inputTime);
+                const inputTime = calculateSeanceTime(input, s.seance_duration);
+                const convertedInput = convertTime(inputTime);
 
-				let convertedStartTime = convertedInput.startTime.toString().replace('.', 'h:');
-				let convertedEndTime = convertedInput.endTime.toString().replace('.', 'h:');
+                let convertedStartTime = convertedInput.startTime
+                    .toString()
+                    .replace(".", "h:");
+                let convertedEndTime = convertedInput.endTime
+                    .toString()
+                    .replace(".", "h:");
 
-				if (convertedStartTime.length === 5) {
-					convertedStartTime += '0';
-				}
+                if (convertedStartTime.length === 5) {
+                    convertedStartTime += "0";
+                }
 
-				if (convertedEndTime.length === 5) {
-					convertedEndTime += '0';
-				}
-				s.startTime = convertedStartTime;
-				s.finishTime = convertedEndTime;
+                if (convertedEndTime.length === 5) {
+                    convertedEndTime += "0";
+                }
+                s.startTime = convertedStartTime;
+                s.finishTime = convertedEndTime;
 
-				emploiName = s.name;
-				if (s.day === 'lundi') obj.lundi.push(s);
-				if (s.day === 'mardi') obj.mardi.push(s);
-				if (s.day === 'mercredi') obj.mercredi.push(s);
-				if (s.day === 'jeudi') obj.jeudi.push(s);
-				if (s.day === 'vendredi') obj.vendredi.push(s);
-				if (s.day === 'samedi') obj.samedi.push(s);
-			});
-			generatePDF(obj, emploiName, folderName.teachers);
-		});
-	} catch (error) {
-		throw ErrorResponse.internalError(error.message);
-	}
+                emploiName = s.name;
+                if (s.day === "lundi") obj.lundi.push(s);
+                if (s.day === "mardi") obj.mardi.push(s);
+                if (s.day === "mercredi") obj.mercredi.push(s);
+                if (s.day === "jeudi") obj.jeudi.push(s);
+                if (s.day === "vendredi") obj.vendredi.push(s);
+                if (s.day === "samedi") obj.samedi.push(s);
+            });
+            generatePDF(obj, emploiName, folderName.teachers);
+        });
+    } catch (error) {
+        throw ErrorResponse.internalError(error.message);
+    }
 }
 
 async function createEmploisStudent() {
-	const classesId = await Classe.findAll();
+    const classesId = await Classe.findAll();
 
-	const preparedQueries = classesId.map((classe) => {
-		return `select m.designation                            as                  matiere,
+    const preparedQueries = classesId.map((classe) => {
+        return `select m.designation                            as                  matiere,
       			start_minute,
 	   			seance_duration,
 	  			start_hour,
@@ -222,54 +234,58 @@ async function createEmploisStudent() {
 		         join matieres m on s.matiereId = m.id
 		where e.classeId = ${classe.id}
 		order by s.day , s.start_hour`;
-	});
+    });
 
-	preparedQueries.forEach(async (query) => {
-		const [seances] = await sequelize.query(query);
-		if (seances.length === 0) {
-			throw ErrorResponse.internalError('data missing for a class');
-		}
-		const emploiName = seances[0].name.trim().replace(' ', '_');
-		const obj = {
-			emploiName,
-			lundi: [],
-			mardi: [],
-			mercredi: [],
-			jeudi: [],
-			vendredi: [],
-			samedi: []
-		};
-		seances.forEach((s) => {
-			const input = {
-				startHour: parseInt(s.start_hour),
-				startMinute: parseInt(s.start_minute)
-			};
+    preparedQueries.forEach(async (query) => {
+        const [seances] = await sequelize.query(query);
+        if (seances.length === 0) {
+            throw ErrorResponse.internalError("data missing for a class");
+        }
+        const emploiName = seances[0].name.trim().replace(" ", "_");
+        const obj = {
+            emploiName,
+            lundi: [],
+            mardi: [],
+            mercredi: [],
+            jeudi: [],
+            vendredi: [],
+            samedi: [],
+        };
+        seances.forEach((s) => {
+            const input = {
+                startHour: parseInt(s.start_hour),
+                startMinute: parseInt(s.start_minute),
+            };
 
-			const inputTime = calculateSeanceTime(input, s.seance_duration);
-			const convertedInput = convertTime(inputTime);
+            const inputTime = calculateSeanceTime(input, s.seance_duration);
+            const convertedInput = convertTime(inputTime);
 
-			let convertedStartTime = convertedInput.startTime.toString().replace('.', 'h:');
-			let convertedEndTime = convertedInput.endTime.toString().replace('.', 'h:');
+            let convertedStartTime = convertedInput.startTime
+                .toString()
+                .replace(".", "h:");
+            let convertedEndTime = convertedInput.endTime
+                .toString()
+                .replace(".", "h:");
 
-			if (convertedStartTime.length === 5) {
-				convertedStartTime += '0';
-			}
+            if (convertedStartTime.length === 5) {
+                convertedStartTime += "0";
+            }
 
-			if (convertedEndTime.length === 5) {
-				convertedEndTime += '0';
-			}
-			s.startTime = convertedStartTime;
-			s.finishTime = convertedEndTime;
+            if (convertedEndTime.length === 5) {
+                convertedEndTime += "0";
+            }
+            s.startTime = convertedStartTime;
+            s.finishTime = convertedEndTime;
 
-			if (s.day === 'lundi') obj.lundi.push(s);
-			if (s.day === 'mardi') obj.mardi.push(s);
-			if (s.day === 'mercredi') obj.mercredi.push(s);
-			if (s.day === 'jeudi') obj.jeudi.push(s);
-			if (s.day === 'vendredi') obj.vendredi.push(s);
-			if (s.day === 'samedi') obj.samedi.push(s);
-		});
-		generatePDF(obj, emploiName, folderName.students);
-	});
+            if (s.day === "lundi") obj.lundi.push(s);
+            if (s.day === "mardi") obj.mardi.push(s);
+            if (s.day === "mercredi") obj.mercredi.push(s);
+            if (s.day === "jeudi") obj.jeudi.push(s);
+            if (s.day === "vendredi") obj.vendredi.push(s);
+            if (s.day === "samedi") obj.samedi.push(s);
+        });
+        generatePDF(obj, emploiName, folderName.students);
+    });
 }
 
 module.exports = { createEmploisStudent, createEmploisTeachers };

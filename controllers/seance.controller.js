@@ -17,7 +17,7 @@ class SeanceController {
 			day,
 			emploiId,
 			teacherId,
-			agentId,
+			adminId,
 			matiereId,
 			salleId
 		} = req.body;
@@ -29,7 +29,7 @@ class SeanceController {
 			day,
 			emploiId,
 			teacherId,
-			agentId,
+			adminId,
 			salleId,
 			matiereId
 		};
@@ -96,7 +96,7 @@ class SeanceController {
 			day,
 			emploiId,
 			teacherId,
-			agentId,
+			adminId,
 			matiereId,
 			salleId
 		} = req.body;
@@ -107,7 +107,7 @@ class SeanceController {
 			day,
 			emploiId,
 			teacherId,
-			agentId,
+			adminId,
 			salleId,
 			matiereId
 		};

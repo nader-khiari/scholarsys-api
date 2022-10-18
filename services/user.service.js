@@ -6,32 +6,29 @@ const { createToken } = require("./Token.service");
 const path = require("path");
 const crypto = require("crypto");
 const { unlink } = require("fs");
-const ROLES = {
-    ADMIN: 1999,
-    TEACHER: 666,
-    STUDENT: 1,
-};
+const ROLES = require("../config/roles");
+
 class UserService {
     static async findAll(option) {
         if (!option) return await User.findAll();
         if (option.teachers) {
             return await User.findAll({
                 where: {
-                    role: 666,
+                    role: ROLES.TEACHER,
                 },
             });
         }
         if (option.students) {
             return await User.findAll({
                 where: {
-                    role: 1,
+                    role: ROLES.STUDENT,
                 },
             });
         }
-        if (option.agents) {
+        if (option.admins) {
             return await User.findAll({
                 where: {
-                    role: 987,
+                    role: ROLES.ADMIN,
                 },
             });
         }
@@ -40,7 +37,7 @@ class UserService {
         let classe = '{"classeId":' + classeId + "}";
         return await User.findAll({
             where: {
-                role: 1,
+                role: ROLES.STUDENT,
                 specificData: classe,
             },
         });
@@ -67,7 +64,7 @@ class UserService {
                 password: hashedPassword,
                 image: newImgName,
             };
-            if (newUserData.role === 666) {
+            if (newUserData.role === ROLES.TEACHER) {
                 const specificData = {
                     classesId: [newUser.classeId],
                     salary: newUserData.salary,
@@ -76,7 +73,7 @@ class UserService {
                 newUserData.specificData = JSON.stringify(specificData);
             }
 
-            if (newUserData.role === 1) {
+            if (newUserData.role === ROLES.STUDENT) {
                 const specificData = '{"classeId":' + newUser.classeId + "}";
 
                 newUserData.specificData = specificData;

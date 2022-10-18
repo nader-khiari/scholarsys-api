@@ -21,7 +21,7 @@ router.get('/test', async (req, res, next) => {
 router.get('/teachers', userController.getTeachers);
 router.get('/students', userController.getStudents);
 router.get('/studentsByClasseId/:id',userController.getStudentsByClasseId)
-router.get('/agents', userController.getAgents);
+router.get('/admins', userController.getAdmins);
 router.get('/', userController.getAll);
 
 router.post(

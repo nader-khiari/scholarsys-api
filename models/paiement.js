@@ -24,10 +24,10 @@ const Paiement = sequlize.define('paiement', {
 	}
 });
 User.hasMany(Paiement, {
-	foreignKey: 'agentId'
+	foreignKey: 'adminId'
 });
 Paiement.belongsTo(User, {
-	foreignKey: 'agentId'
+	foreignKey: 'adminId'
 });
 User.hasMany(Paiement, {
 	foreignKey: 'studentId'

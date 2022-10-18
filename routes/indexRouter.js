@@ -53,7 +53,7 @@ router.get("/revoke", (_, res) => {
 router.get(
     "/test",
     isAuthenticated,
-    verifyRole("teacher", "student"),
+    verifyRole("TEACHER", "STUDENT"),
     (req, res) => {
         res.sendStatus(200);
     }

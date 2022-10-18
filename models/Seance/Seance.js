@@ -1,11 +1,11 @@
-const Sequelize = require('Sequelize');
+const Sequelize = require('sequelize');
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db.config');
 const User = require('../User/User');
 
 // i want every seance (time +duration) + teacherId unique for that day in every emploi (check constraint or validate ???)
 // create procedure ???
-// create trigger when agent adds emploi it push old ones into new table history ??
+// create trigger when admin adds emploi it push old ones into new table history ??
 const Seance = sequelize.define(
 	'seance',
 	{

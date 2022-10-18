@@ -9,11 +9,11 @@ class EmploiController {
 		}
 	};
 	static create = async (req, res, next) => {
-		const { name, classeId, agentId } = req.body;
+		const { name, classeId, adminId } = req.body;
 		const emploi = {
 			name,
 			classeId,
-			agentId
+			adminId
 		};
 		try {
 			await EmploiService.create(emploi);
@@ -26,12 +26,12 @@ class EmploiController {
 		}
 	};
 	static update = async (req, res, next) => {
-		const { name, classId, agentId } = req.body;
+		const { name, classId, adminId } = req.body;
 		const id = req.params.id;
 		const updatedEmploi = {
 			name,
 			classId,
-			agentId
+			adminId
 		};
 		try {
 			await EmploiService.updateOne(id, updatedEmploi);

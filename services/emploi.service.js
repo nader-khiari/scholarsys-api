@@ -9,7 +9,7 @@ class EmploiService {
 		const emp = {
 			name: emploi.name,
 			classeId: emploi.classeId,
-			agentId: emploi.agentId
+			adminId: emploi.adminId
 		};
 
 		try {

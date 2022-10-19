@@ -56,8 +56,13 @@ const User = sequlize.define(
             defaultValue: 0,
         },
         role: {
-            type: Sequelize.TEXT,
+            type: Sequelize.ENUM(Object.values(ROLES)),
             defaultValue: ROLES.STUDENT,
+            allowNull: false,
+        },
+        gender: {
+            type: Sequelize.ENUM(["MALE", "FEMALE"]),
+            defaultValue: "MALE",
             allowNull: false,
         },
         // salaire: {

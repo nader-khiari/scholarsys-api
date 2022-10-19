@@ -13,6 +13,7 @@ const authRouter = require("./authRouter");
 const seanceRouter = require("./seanceRouter");
 const emploiRouter = require("./emploiRouter");
 const attendanceRouter = require("./attendanceRouter");
+const statsRouter = require("./statsRouter");
 
 const niveauRouter = require("./niveau-routes");
 const classeRouter = require("./classe-routes");
@@ -29,6 +30,7 @@ router.use("/user", userRouter);
 router.use("/seance", seanceRouter);
 router.use("/emploi", emploiRouter);
 router.use("/attendance", attendanceRouter);
+router.use("/stats", statsRouter);
 
 router.use("/", niveauRouter);
 router.use("/", classeRouter);

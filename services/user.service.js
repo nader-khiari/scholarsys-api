@@ -7,6 +7,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { unlink } = require("fs");
 const ROLES = require("../config/roles");
+const sequelize = require("sequelize");
 
 class UserService {
     static async findAll(option) {
@@ -259,6 +260,37 @@ class UserService {
             await user.save();
         }
     }
+
+    //#region stats
+    static async count(where = {}) {
+        return await User.findOne({
+            where: where,
+            attributes: [[sequelize.fn("COUNT", "*"), "value"]],
+            raw: true,
+            nest: true,
+        });
+    }
+
+    static async countByDate(where = {}, dateFormat = "%Y-%m-%d") {
+        return await User.findAll({
+            where: where,
+            attributes: [
+                [
+                    sequelize.fn(
+                        "DATE_FORMAT",
+                        sequelize.col("createdAt"),
+                        dateFormat
+                    ),
+                    "date",
+                ],
+                [sequelize.fn("COUNT", "*"), "value"],
+            ],
+            group: "date",
+            raw: true,
+            nest: true,
+        });
+    }
+    //#endregion
 }
 
 module.exports = UserService;

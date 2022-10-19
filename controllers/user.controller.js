@@ -62,6 +62,7 @@ class userController {
             phoneNumber,
             birthDate,
             role,
+            gender,
             salary,
             classeId,
         } = req.body;
@@ -74,6 +75,7 @@ class userController {
             birthDate,
             image: req.files.image,
             classeId,
+            gender,
         };
         if (role) {
             newUser.role = role;
@@ -112,6 +114,7 @@ class userController {
             phoneNumber,
             birthDate,
             salary,
+            gender,
         } = req.body;
         let updatedUser = {
             firstname,
@@ -120,6 +123,7 @@ class userController {
             password,
             phoneNumber,
             birthDate,
+            gender,
         };
         if (salary) {
             updatedUser.salary = salary;

@@ -189,6 +189,29 @@ class userController {
             next(error);
         }
     };
+    static block = async (req, res, next) => {
+        const id = req.params.id;
+        const { reason } = req.body;
+        try {
+            await UserService.blockOne(id, reason);
+            return res
+                .status(200)
+                .json({ success: true, message: `user blocked` });
+        } catch (error) {
+            next(error);
+        }
+    };
+    static unblock = async (req, res, next) => {
+        const id = req.params.id;
+        try {
+            await UserService.unblockOne(id);
+            return res
+                .status(200)
+                .json({ success: true, message: `user unblocked` });
+        } catch (error) {
+            next(error);
+        }
+    };
     static StudentCount = async (req, res, next) => {
         //console.log('test');
         const studentC = await User.count({

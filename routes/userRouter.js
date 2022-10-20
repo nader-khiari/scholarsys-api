@@ -1,51 +1,52 @@
-const express = require('express');
-const fileUpload = require('express-fileupload');
+const express = require("express");
+const fileUpload = require("express-fileupload");
 const router = express.Router();
 
-const userController = require('../controllers/user.controller');
-const userSchema = require('../models/User/user.validation.schema');
-const validateRequestSchema = require('../middlewares/validation.middlware');
-const isAuthenticated = require('../middlewares/isAuthenticated.middleware');
-const User = require('../models/User/User');
+const userController = require("../controllers/user.controller");
+const userSchema = require("../models/User/user.validation.schema");
+const validateRequestSchema = require("../middlewares/validation.middlware");
+const isAuthenticated = require("../middlewares/isAuthenticated.middleware");
+const User = require("../models/User/User");
 // const errorHandler = require('../../middleware/error/errorHandler.middleware');
 
 // TODO : accountType middleware
 
 router.use(fileUpload());
 
-router.get('/test', async (req, res, next) => {
-	const u = await User.findByPk(1);
-	console.log(await u.getEmplois());
+router.get("/test", async (req, res, next) => {
+    const u = await User.findByPk(1);
+    console.log(await u.getEmplois());
 });
 
-router.get('/teachers', userController.getTeachers);
-router.get('/students', userController.getStudents);
-router.get('/studentsByClasseId/:id',userController.getStudentsByClasseId)
-router.get('/admins', userController.getAdmins);
-router.get('/', userController.getAll);
+router.get("/teachers", userController.getTeachers);
+router.get("/students", userController.getStudents);
+router.get("/studentsByClasseId/:id", userController.getStudentsByClasseId);
+router.get("/admins", userController.getAdmins);
+router.get("/", userController.getAll);
 
 router.post(
-	'/',
-	userSchema.createUserSchema,
-	validateRequestSchema,
-	// fileUpload({
-	// 	limits: { fileSize: 5 * 1024 * 1024 },
-	// 	createParentPath: true,
-	// 	// safeFileNames: true,
-	// 	responseOnLimit: 'limited' //cloud cause error
-	// }),
-	userController.create
+    "/",
+    userSchema.createUserSchema,
+    validateRequestSchema,
+    // fileUpload({
+    // 	limits: { fileSize: 5 * 1024 * 1024 },
+    // 	createParentPath: true,
+    // 	// safeFileNames: true,
+    // 	responseOnLimit: 'limited' //cloud cause error
+    // }),
+    userController.create
 );
-router.get('/:id', userController.getOne);
+router.get("/:id", userController.getOne);
 
-router.patch('/:id', userController.update);
+router.patch("/:id", userController.update);
 
-router.patch('/addClass/:id', userController.addClassToUser);
-router.patch('/removeClass/:id', userController.removeClassToUser);
+router.patch("/addClass/:id", userController.addClassToUser);
+router.patch("/removeClass/:id", userController.removeClassToUser);
 
-router.delete('/:id', userController.delete);
+router.delete("/:id", userController.delete);
 
-router.patch('/teacher/:id', userController.updateSalary);
+router.patch("/block/:id", userController.block);
 
+router.patch("/unblock/:id", userController.unblock);
 
 module.exports = router;

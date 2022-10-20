@@ -193,6 +193,19 @@ class UserService {
         await user.save();
     }
 
+    static async blockOne(id, reason) {
+        const user = await User.findByPk(id);
+        user.blockedAt = Date.now();
+        if (reason) user.lastBlockReason = reason.toString();
+        await user.save();
+    }
+
+    static async unblockOne(id) {
+        const user = await User.findByPk(id);
+        user.blockedAt = null;
+        await user.save();
+    }
+
     static async deleteOne(id) {
         try {
             return await User.destroy({

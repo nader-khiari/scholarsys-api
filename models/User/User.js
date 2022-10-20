@@ -70,6 +70,12 @@ const User = sequlize.define(
             type: Sequelize.JSON,
             allowNull: true,
         },
+        blockedAt: {
+            type: Sequelize.DATE,
+        },
+        lastBlockReason: {
+            type: Sequelize.STRING,
+        },
     },
     {
         underscored: true,

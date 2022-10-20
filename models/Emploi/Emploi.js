@@ -1,8 +1,5 @@
 const Sequelize = require("sequelize");
 const sequilize = require("../../config/db.config");
-const Seance = require("../Seance/Seance");
-const Classe = require("../classe");
-const User = require("../User/User");
 
 const Emploi = sequilize.define(
     "emploi",
@@ -24,11 +21,5 @@ const Emploi = sequilize.define(
         timestamps: true,
     }
 );
-
-Emploi.hasMany(Seance);
-Seance.belongsTo(Emploi);
-
-Classe.hasMany(Emploi);
-Emploi.belongsTo(Classe);
 
 module.exports = Emploi;

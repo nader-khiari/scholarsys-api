@@ -1,7 +1,6 @@
 "use strict";
 const Sequelize = require("sequelize");
 const sequlize = require("../config/db.config");
-const User = require("./User/User");
 
 const Paiement = sequlize.define(
     "paiement",
@@ -30,18 +29,5 @@ const Paiement = sequlize.define(
         timestamps: true,
     }
 );
-
-User.hasMany(Paiement, {
-    foreignKey: "adminId",
-});
-Paiement.belongsTo(User, {
-    foreignKey: "adminId",
-});
-User.hasMany(Paiement, {
-    foreignKey: "studentId",
-});
-Paiement.belongsTo(User, {
-    foreignKey: "studentId",
-});
 
 module.exports = Paiement;

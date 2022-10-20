@@ -8,3 +8,5 @@ public/users_images/*
 
 #Environment Variables
 .env
+
+static

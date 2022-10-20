@@ -5,10 +5,16 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const sequelize = require("./config/db.config");
 const indexRouter = require("./routes/indexRouter");
 const logger = require("morgan");
 require("./modelsRelations");
+
+let usersImagesPath = path.join(process.cwd(), "static", "users_images");
+if (!fs.existsSync(usersImagesPath)) {
+    fs.mkdirSync(usersImagesPath, { recursive: true });
+}
 
 const PORT = process.env.PORT || 8000;
 
@@ -24,7 +30,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use("/api/static", express.static(path.join(__dirname, "public")));
+app.use("/api/static", express.static(path.join(process.cwd(), "static")));
 
 app.use("/api", indexRouter);
 

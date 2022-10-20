@@ -87,7 +87,7 @@ class UserService {
             sampleFile.name = newImgName;
             const uploadPath = path.join(
                 process.cwd(),
-                "public",
+                "static",
                 "users_images",
                 sampleFile.name
             );

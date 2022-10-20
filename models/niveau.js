@@ -1,8 +1,6 @@
 "use strict";
 const Sequelize = require("sequelize");
 const sequlize = require("../config/db.config");
-const Classe = require("./classe");
-const Matiere = require("./matiere");
 
 const Niveau = sequlize.define(
     "niveau",
@@ -27,13 +25,5 @@ const Niveau = sequlize.define(
         timestamps: true,
     }
 );
-
-Niveau.hasMany(Classe, {
-    foreignKey: "niveauId",
-});
-Classe.belongsTo(Niveau);
-
-Niveau.hasMany(Matiere);
-Matiere.belongsTo(Niveau);
 
 module.exports = Niveau;

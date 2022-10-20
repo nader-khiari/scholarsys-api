@@ -1,7 +1,6 @@
 "use strict";
 const Sequelize = require("sequelize");
 const sequlize = require("../config/db.config");
-const Seance = require("./Seance/Seance");
 
 const Salle = sequlize.define(
     "salle",
@@ -23,7 +22,5 @@ const Salle = sequlize.define(
         timestamps: true,
     }
 );
-Salle.hasMany(Seance);
-Seance.belongsTo(Salle);
 
 module.exports = Salle;

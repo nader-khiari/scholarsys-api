@@ -37,7 +37,6 @@ module.exports = Matiere;*/
 "use strict";
 const Sequelize = require("sequelize");
 const sequlize = require("../config/db.config");
-const Note = require("./note");
 
 const Matiere = sequlize.define(
     "matiere",
@@ -66,6 +65,5 @@ const Matiere = sequlize.define(
         timestamps: true,
     }
 );
-Matiere.hasMany(Note);
-Note.belongsTo(Matiere);
+
 module.exports = Matiere;

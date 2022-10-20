@@ -1,11 +1,6 @@
 const Sequelize = require("sequelize");
 const sequlize = require("../../config/db.config");
 const ACCOUNT_TYPES = require("../../config/accountTypes");
-const Classe = require("../classe");
-const Emploi = require("../Emploi/Emploi");
-const Matiere = require("../matiere");
-const Note = require("../note");
-const Seance = require("../Seance/Seance");
 
 //
 const User = sequlize.define(
@@ -82,60 +77,5 @@ const User = sequlize.define(
         paranoid: true,
     }
 );
-//prof has many seance
-User.hasMany(Seance, {
-    foreignKey: "teacherId",
-});
-
-//seance belongs to prof
-Seance.belongsTo(User, {
-    foreignKey: "teacherId",
-});
-
-//seance belongs to admin
-Seance.belongsTo(User, {
-    foreignKey: "adminId",
-});
-
-// admin
-User.hasMany(Emploi, {
-    foreignKey: "adminId",
-});
-
-// table emploi contains adminId created EMPLOI
-Emploi.belongsTo(User, {
-    foreignKey: "adminId",
-});
-
-// could cause probs
-User.hasMany(Seance, {
-    foreignKey: "adminId",
-});
-
-User.belongsToMany(Classe, {
-    through: "teacher_classes",
-    foreignKey: "teacherId",
-});
-Classe.belongsToMany(User, {
-    through: "teacher_classes",
-    foreignKey: "classeId",
-});
-
-User.hasMany(Note, {
-    foreignKey: "teacherId",
-});
-Note.belongsTo(User, {
-    foreignKey: "teacherId",
-});
-
-User.hasMany(Note, {
-    foreignKey: "studentId",
-});
-Note.belongsTo(User, {
-    foreignKey: "studentId",
-});
-
-Matiere.hasMany(Seance);
-Seance.belongsTo(Matiere);
 
 module.exports = User;

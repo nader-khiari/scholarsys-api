@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 const ErrorResponse = require("../util/helpers/ErrorResponse");
-const ROLES = require("../config/roles");
+const ACCOUNT_TYPES = require("../config/accountTypes");
 
-const verifyRole = (...allowedRoles) => {
-    //  * Implementation getting user role  from jwt *
+const verifyAccountType = (...allowedAccountTypes) => {
+    //  * Implementation getting user accountType  from jwt *
     return (req, res, next) => {
         const authorization =
             req.headers.authorization || req.headers.Authorization;
@@ -15,12 +15,13 @@ const verifyRole = (...allowedRoles) => {
             const token = authorization.split(" ")[1];
             const payload = jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
 
-            if (!payload.role) {
+            if (!payload.accountType) {
                 throw ErrorResponse.unauthorized();
             }
-            const rolesArray = [...allowedRoles];
-            const result = rolesArray.some(
-                (role) => ROLES[role] === payload.role
+            const accountTypesArray = [...allowedAccountTypes];
+            const result = accountTypesArray.some(
+                (accountType) =>
+                    ACCOUNT_TYPES[accountType] === payload.accountType
             );
             if (!result) {
                 throw ErrorResponse.unauthorized();
@@ -31,15 +32,15 @@ const verifyRole = (...allowedRoles) => {
         }
         next();
     };
-    // * Implementation getting user role from req*
+    // * Implementation getting user accountType from req*
     // return (req, res, next) => {
     // 	try {
-    // 		if (!req.role) {
-    // 			throw Error('role is missing');
+    // 		if (!req.accountType) {
+    // 			throw Error('accountType is missing');
     // 		}
-    // 		const rolesArray = [ ...allowedRoles ];
-    // 		const result = rolesArray
-    // 			.map((role) => roles.get(role) === req.role)
+    // 		const accountTypesArray = [ ...allowedAccountTypes ];
+    // 		const result = accountTypesArray
+    // 			.map((accountType) => accountTypes.get(accountType) === req.accountType)
     // 			.find((val) => val === true);
     // 		if (!result) {
     // 			throw new Error('not authorized');
@@ -52,4 +53,4 @@ const verifyRole = (...allowedRoles) => {
     // };
 };
 
-module.exports = verifyRole;
+module.exports = verifyAccountType;

@@ -6,7 +6,7 @@ const Token = require("../services/Token.service");
 
 const errorHandler = require("../middlewares/errorHandler.middleware");
 const isAuthenticated = require("../middlewares/isAuthenticated.middleware");
-const verifyRole = require("../middlewares/isAuthorized.middleware");
+const verifyAccountType = require("../middlewares/isAuthorized.middleware");
 
 const userRouter = require("./userRouter");
 const authRouter = require("./authRouter");
@@ -55,7 +55,7 @@ router.get("/revoke", (_, res) => {
 router.get(
     "/test",
     isAuthenticated,
-    verifyRole("TEACHER", "STUDENT"),
+    verifyAccountType("TEACHER", "STUDENT"),
     (req, res) => {
         res.sendStatus(200);
     }

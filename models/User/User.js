@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const sequlize = require("../../config/db.config");
-const ROLES = require("../../config/roles");
+const ACCOUNT_TYPES = require("../../config/accountTypes");
 const Classe = require("../classe");
 const Emploi = require("../Emploi/Emploi");
 const Matiere = require("../matiere");
@@ -55,9 +55,9 @@ const User = sequlize.define(
             type: Sequelize.INTEGER,
             defaultValue: 0,
         },
-        role: {
-            type: Sequelize.ENUM(Object.values(ROLES)),
-            defaultValue: ROLES.STUDENT,
+        accountType: {
+            type: Sequelize.ENUM(Object.values(ACCOUNT_TYPES)),
+            defaultValue: ACCOUNT_TYPES.STUDENT,
             allowNull: false,
         },
         gender: {
@@ -77,9 +77,9 @@ const User = sequlize.define(
         },
     },
     {
+        underscored: true,
         timestamps: true,
-        createdAt: true,
-        updatedAt: true,
+        paranoid: true,
     }
 );
 //prof has many seance

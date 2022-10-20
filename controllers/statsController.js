@@ -8,9 +8,9 @@ class statsController {
     static getKpi = async (req, res, next) => {
         try {
             let result = {
-                teachersCount: (await UserService.count({ role: "TEACHER" }))
+                teachersCount: (await UserService.count({ accountType: "TEACHER" }))
                     .value,
-                studentsCount: (await UserService.count({ role: "STUDENT" }))
+                studentsCount: (await UserService.count({ accountType: "STUDENT" }))
                     .value,
                 classesCount: (await classeService.count()).value,
                 levelsCount: (await niveauService.count()).value,
@@ -21,7 +21,7 @@ class statsController {
                     .value,
                 studentsCountByMonth: await UserService.countByDate(
                     {
-                        role: "STUDENT",
+                        accountType: "STUDENT",
                     },
                     "%Y-%m"
                 ),

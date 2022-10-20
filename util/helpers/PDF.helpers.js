@@ -7,7 +7,7 @@ const ejs = require("ejs");
 const { Op } = require("sequelize");
 const User = require("../../models/User/User");
 const { convertTime, calculateSeanceTime } = require("./helpers.util");
-const ROLES = require("../../config/roles");
+const ACCOUNT_TYPES = require("../../config/accountTypes");
 const folderName = {
     teachers: "teachers",
     students: "students",
@@ -134,7 +134,7 @@ async function createEmploisTeachers() {
         attributes: ["specificData", "id"],
         where: {
             [Op.and]: [
-                { role: ROLES.TEACHER },
+                { accountType: ACCOUNT_TYPES.TEACHER },
                 { specificData: { [Op.not]: null } },
             ],
         },

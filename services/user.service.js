@@ -6,7 +6,7 @@ const { createToken } = require("./Token.service");
 const path = require("path");
 const crypto = require("crypto");
 const { unlink } = require("fs");
-const ROLES = require("../config/roles");
+const ACCOUNT_TYPES = require("../config/accountTypes");
 const sequelize = require("sequelize");
 
 class UserService {
@@ -15,21 +15,21 @@ class UserService {
         if (option.teachers) {
             return await User.findAll({
                 where: {
-                    role: ROLES.TEACHER,
+                    accountType: ACCOUNT_TYPES.TEACHER,
                 },
             });
         }
         if (option.students) {
             return await User.findAll({
                 where: {
-                    role: ROLES.STUDENT,
+                    accountType: ACCOUNT_TYPES.STUDENT,
                 },
             });
         }
         if (option.admins) {
             return await User.findAll({
                 where: {
-                    role: ROLES.ADMIN,
+                    accountType: ACCOUNT_TYPES.ADMIN,
                 },
             });
         }
@@ -38,7 +38,7 @@ class UserService {
         let classe = '{"classeId":' + classeId + "}";
         return await User.findAll({
             where: {
-                role: ROLES.STUDENT,
+                accountType: ACCOUNT_TYPES.STUDENT,
                 specificData: classe,
             },
         });
@@ -65,7 +65,7 @@ class UserService {
                 password: hashedPassword,
                 image: newImgName,
             };
-            if (newUserData.role === ROLES.TEACHER) {
+            if (newUserData.accountType === ACCOUNT_TYPES.TEACHER) {
                 const specificData = {
                     classesId: [newUser.classeId],
                     salary: newUserData.salary,
@@ -74,7 +74,7 @@ class UserService {
                 newUserData.specificData = JSON.stringify(specificData);
             }
 
-            if (newUserData.role === ROLES.STUDENT) {
+            if (newUserData.accountType === ACCOUNT_TYPES.STUDENT) {
                 const specificData = '{"classeId":' + newUser.classeId + "}";
 
                 newUserData.specificData = specificData;
@@ -206,14 +206,14 @@ class UserService {
     }
     static async addClassToUser(id, classeId) {
         const user = await User.findByPk(id);
-        if (user.role === ROLES.STUDENT) {
+        if (user.accountType === ACCOUNT_TYPES.STUDENT) {
             const newSpeceficData = JSON.stringify({ classeId });
             console.log(newSpeceficData);
             user.specificData = newSpeceficData;
             await user.save();
         }
 
-        if (user.role === ROLES.TEACHER) {
+        if (user.accountType === ACCOUNT_TYPES.TEACHER) {
             const classes = await JSON.parse(JSON.parse(user.specificData));
             const exist = classes.classesId.find(
                 (existingId) => existingId === classeId
@@ -232,14 +232,14 @@ class UserService {
 
     static async removeClassToUser(id, classeId) {
         const user = await User.findByPk(id);
-        if (user.role === ROLES.STUDENT) {
+        if (user.accountType === ACCOUNT_TYPES.STUDENT) {
             // const specificData = JSON.parse(user.specificData);
             // const keys = Object.keys(specificData);
             // const newClasseId = keys.find((k) => specificData[k] === classeId);
             user.specificData = null;
             await user.save();
         }
-        if (user.role === ROLES.TEACHER) {
+        if (user.accountType === ACCOUNT_TYPES.TEACHER) {
             const classes = await JSON.parse(JSON.parse(user.specificData));
             if (classes.classesId.length === 0) {
                 throw ErrorResponse.badRequest(
@@ -263,22 +263,23 @@ class UserService {
 
     //#region stats
     static async count(where = {}) {
-        return await User.findOne({
+        let result = await User.findOne({
             where: where,
             attributes: [[sequelize.fn("COUNT", "*"), "value"]],
             raw: true,
             nest: true,
         });
+        return result;
     }
 
     static async countByDate(where = {}, dateFormat = "%Y-%m-%d") {
-        return await User.findAll({
+        let result = await User.findAll({
             where: where,
             attributes: [
                 [
                     sequelize.fn(
                         "DATE_FORMAT",
-                        sequelize.col("createdAt"),
+                        sequelize.col("created_at"),
                         dateFormat
                     ),
                     "date",
@@ -289,6 +290,7 @@ class UserService {
             raw: true,
             nest: true,
         });
+        return result;
     }
     //#endregion
 }

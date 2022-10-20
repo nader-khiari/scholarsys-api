@@ -8,6 +8,7 @@ const path = require("path");
 const sequelize = require("./config/db.config");
 const indexRouter = require("./routes/indexRouter");
 const logger = require("morgan");
+require("./modelsRelations");
 
 const PORT = process.env.PORT || 8000;
 
@@ -53,7 +54,7 @@ app.use("/api", indexRouter);
 app.listen(PORT, async () => {
     try {
         //await sequelize.sync({ force: true });
-        //await sequelize.sync();
+        // await sequelize.sync({ alter: true });
     } catch (err) {
         console.log(err);
     }

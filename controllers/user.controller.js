@@ -1,7 +1,7 @@
 const UserService = require("../services/user.service");
 const User = require("../models/User/User");
 const { Op } = require("sequelize");
-const ROLES = require("../config/roles");
+const ACCOUNT_TYPES = require("../config/accountTypes");
 // TODO : handle cases when find might return empty array or not obj
 // TODO : ADD Service layer & clean up controller
 
@@ -61,7 +61,7 @@ class userController {
             password,
             phoneNumber,
             birthDate,
-            role,
+            accountType,
             gender,
             salary,
             classeId,
@@ -77,8 +77,8 @@ class userController {
             classeId,
             gender,
         };
-        if (role) {
-            newUser.role = role;
+        if (accountType) {
+            newUser.accountType = accountType;
             newUser.salary = salary;
         }
 
@@ -191,7 +191,9 @@ class userController {
     };
     static StudentCount = async (req, res, next) => {
         //console.log('test');
-        const studentC = await User.count({ where: { role: ROLES.STUDENT } });
+        const studentC = await User.count({
+            where: { accountType: ACCOUNT_TYPES.STUDENT },
+        });
         console.log(studentC);
         if (!studentC) {
             res.status(500).json({ success: false });
@@ -202,7 +204,7 @@ class userController {
     static TeacherCount = async (req, res, next) => {
         console.log("test");
         const teachertC = await User.count({
-            where: { role: { [Op.eq]: ROLES.TEACHER } },
+            where: { accountType: { [Op.eq]: ACCOUNT_TYPES.TEACHER } },
         });
         //console.log(studentC);
         if (!teachertC) {
@@ -214,7 +216,7 @@ class userController {
     static AdminCount = async (req, res, next) => {
         console.log("test");
         const adminC = await User.count({
-            where: { role: { [Op.eq]: ROLES.ADMIN } },
+            where: { accountType: { [Op.eq]: ACCOUNT_TYPES.ADMIN } },
         });
         //console.log(studentC);
         if (!adminC) {

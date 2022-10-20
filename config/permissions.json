@@ -1,0 +1,5 @@
+[
+    { "code": "1000", "name": "test1", "category": "testCat1" },
+    { "code": "2000", "name": "test2", "category": "testCat2" },
+    { "code": "3000", "name": "test3", "category": "testCat3" }
+]

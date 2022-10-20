@@ -8,10 +8,10 @@ const isAuthenticated = (req, res, next) => {
 		}
 		const token = authorization.split(' ')[1];
 		const payload = jwt.verify(token, process.env.SECRET_ACCESS_TOKEN);
-		if (!payload.role) {
+		if (!payload.accountType) {
 			throw ErrorResponse.unauthorized();
 		}
-		req.role = payload.role; //for the req.role based authorization
+		req.accountType = payload.accountType; //for the req.accountType based authorization
 		req.userId = payload.userId;
 		next();
 	} catch (err) {

@@ -5,3 +5,6 @@ testingTime.js
 .vscode
 
 public/users_images/*
+
+#Environment Variables
+.env

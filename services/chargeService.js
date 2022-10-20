@@ -4,12 +4,20 @@ const Charge = require("../models/charge");
 class chargeService {
     //#region stats
     static async amountSum(options) {
-        return await Charge.findOne({
+        let result = await Charge.findOne({
             where: options ?? {},
             attributes: [
                 [
                     sequelize.cast(
-                        sequelize.fn("SUM", sequelize.col("montant_facture")),
+                        sequelize.fn(
+                            "COALESCE",
+                            sequelize.fn(
+                                "SUM",
+                                sequelize.col("montant_facture")
+                            ),
+                            0
+                        ),
+
                         "int"
                     ),
                     "value",
@@ -18,6 +26,7 @@ class chargeService {
             raw: true,
             nest: true,
         });
+        return result;
     }
 
     static async amountSumByDate(where = {}, dateFormat = "%Y-%m-%d") {
@@ -27,7 +36,7 @@ class chargeService {
                 [
                     sequelize.fn(
                         "DATE_FORMAT",
-                        sequelize.col("createdAt"),
+                        sequelize.col("created_at"),
                         dateFormat
                     ),
                     "date",

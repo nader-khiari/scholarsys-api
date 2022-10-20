@@ -9,7 +9,7 @@ const isAuthenticated = require('../middlewares/isAuthenticated.middleware');
 const User = require('../models/User/User');
 // const errorHandler = require('../../middleware/error/errorHandler.middleware');
 
-// TODO : role middleware
+// TODO : accountType middleware
 
 router.use(fileUpload());
 

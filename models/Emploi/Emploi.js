@@ -15,6 +15,16 @@ const Emploi = sequilize.define(
             allowNull: false,
             unique: true,
         },
+        startDate: {
+            type: Sequelize.DATEONLY,
+            allowNull: false,
+            defaultValue: Sequelize.NOW,
+        },
+        endDate: {
+            type: Sequelize.DATEONLY,
+            allowNull: false,
+            defaultValue: Sequelize.NOW,
+        },
     },
     {
         underscored: true,

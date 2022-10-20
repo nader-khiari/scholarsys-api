@@ -23,7 +23,6 @@ class userController {
         }
     };
     static getAdmins = async (_, res, next) => {
-        console.log("------------------------------------------");
         try {
             return res
                 .status(200)

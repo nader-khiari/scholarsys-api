@@ -28,10 +28,8 @@ const generatePDF = async (obj, name, folderName) => {
 		`${name}.pdf`
 	); */
     const filePath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "public",
+        process.cwd(),
+        "static",
         "emploi",
         folderName,
         `${name}.pdf`
@@ -62,25 +60,25 @@ const generatePDF = async (obj, name, folderName) => {
 async function createEmploisTeachers() {
     const classesId = await Classe.findAll();
     const preparedQueries = classesId.map((classe) => {
-        return `select m.designation                            as                  matiere,
+        return `select m.designation as matiere,
       			start_minute,
 	   			seance_duration,
 	  			start_hour,
-		        s2.designation                           as                  salle,
-		        e.name                                   as                  'title',
+		        s2.designation as salle,
+		        e.name as 'title',
 		        s.day,
 			    e.name as name
 		from emplois e
-		         join seances s on e.id = s.emploiId
-		         join salles s2 on s.salleId = s2.id
-		         join matieres m on s.matiereId = m.id
-		where e.classeId = ${classe.id}
+		         join seances s on e.id = s.emploi_id
+		         left join salles s2 on s.salle_id = s2.id
+		         join matieres m on s.matiere_id = m.id
+		where e.classe_id = ${classe.id}
 		order by s.day , s.start_hour`;
     });
     preparedQueries.forEach(async (query) => {
-        console.log(query);
         const [seances] = await sequelize.query(query);
         if (seances.length === 0) {
+            return;
             throw ErrorResponse.internalError("data missing for a class");
         }
         const emploiName = seances[0].name.trim().replace(" ", "_");
@@ -143,24 +141,24 @@ async function createEmploisTeachers() {
     const teachersId = teachers.map((teacher) => {
         const obj = JSON.parse(JSON.parse(teacher.specificData));
         console.log(obj);
-        if (obj.classesId.length !== 0) return teacher.id;
+        if (obj?.classesId?.length !== 0) return teacher.id;
     });
 
     const preparedQueriesTeachers = teachersId.map((id) => {
-        return `select m.designation                            as                  matiere,
+        return `select m.designation as matiere,
          start_minute,
 		   seance_duration,
 		   start_hour,
-	       s2.designation                           as                  salle,
+	       s2.designation as salle,
 	       u.firstname,
 	       s.day,
 	       concat('emploi_',u.firstname,'_',u.lastname) as name
 	from emplois e
-	         join seances s on e.id = s.emploiId
-	         join users u on s.teacherId = u.id
-	         join salles s2 on s.salleId = s2.id
-	         join matieres m on s.matiereId = m.id
-	where s.teacherId = ${id}`;
+	         join seances s on e.id = s.emploi_id
+	         join users u on s.teacher_id = u.id
+	         left join salles s2 on s.salle_id = s2.id
+	         join matieres m on s.matiere_id = m.id
+	where s.teacher_id = ${id}`;
     });
 
     try {
@@ -220,25 +218,29 @@ async function createEmploisStudent() {
     const classesId = await Classe.findAll();
 
     const preparedQueries = classesId.map((classe) => {
-        return `select m.designation                            as                  matiere,
+        return `select m.designation as matiere,
       			start_minute,
 	   			seance_duration,
 	  			start_hour,
-		        s2.designation                           as                  salle,
-		        e.name                                   as                  'title',
+		        s2.designation as salle,
+		        e.name as 'title',
 		        s.day,
 			    e.name as name
 		from emplois e
-		         join seances s on e.id = s.emploiId
-		         join salles s2 on s.salleId = s2.id
-		         join matieres m on s.matiereId = m.id
-		where e.classeId = ${classe.id}
+		         join seances s on e.id = s.emploi_id
+		         left join salles s2 on s.salle_id = s2.id
+		         join matieres m on s.matiere_id = m.id
+		where e.classe_id = ${classe.id}
 		order by s.day , s.start_hour`;
     });
 
     preparedQueries.forEach(async (query) => {
         const [seances] = await sequelize.query(query);
+        console.log("------------------------------------------------");
+        console.log(seances);
+        console.log("------------------------------------------------");
         if (seances.length === 0) {
+            return;
             throw ErrorResponse.internalError("data missing for a class");
         }
         const emploiName = seances[0].name.trim().replace(" ", "_");

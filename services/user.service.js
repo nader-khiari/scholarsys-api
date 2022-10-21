@@ -106,7 +106,7 @@ class UserService {
 
             const emailToken = createToken(user, { type: "email" }); // throws error
 
-            const body = `<h3> ${user.email} </h3> to confirm your account please click this link ${process.env.FRONT_URL}/confirm/${emailToken}.<h1>This link will expire in 30m.</h1>`;
+            const body = `<h3> ${user.email} </h3>Welcome to our website. Please confirm your account through this link ${process.env.FRONT_URL}/confirm/${emailToken}.`;
 
             await sendEmail(user.email, "Confirm your account", body);
         } catch (err) {

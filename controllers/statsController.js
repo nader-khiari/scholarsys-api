@@ -8,17 +8,26 @@ class statsController {
     static getKpi = async (req, res, next) => {
         try {
             let result = {
-                teachersCount: (await UserService.count({ accountType: "TEACHER" }))
-                    .value,
-                studentsCount: (await UserService.count({ accountType: "STUDENT" }))
-                    .value,
+                teachersCount: (
+                    await UserService.count({ accountType: "TEACHER" })
+                ).value,
+                studentsCount: (
+                    await UserService.count({ accountType: "STUDENT" })
+                ).value,
                 classesCount: (await classeService.count()).value,
                 levelsCount: (await niveauService.count()).value,
                 femaleStudentsCount: (
-                    await UserService.count({ gender: "FEMALE" })
+                    await UserService.count({
+                        accountType: "STUDENT",
+                        gender: "FEMALE",
+                    })
                 ).value,
-                maleStudentsCount: (await UserService.count({ gender: "MALE" }))
-                    .value,
+                maleStudentsCount: (
+                    await UserService.count({
+                        accountType: "STUDENT",
+                        gender: "MALE",
+                    })
+                ).value,
                 studentsCountByMonth: await UserService.countByDate(
                     {
                         accountType: "STUDENT",

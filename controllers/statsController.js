@@ -35,10 +35,11 @@ class statsController {
                     "%Y-%m"
                 ),
                 totalCharges: 0, //(await chargeService.amountSum()).value,
-                totalChargesByMonth: await chargeService.amountSumByDate(
-                    {},
-                    "%Y-%m"
-                ),
+                totalChargesByMonth: [],
+                // await chargeService.amountSumByDate(
+                //     {},
+                //     "%Y-%m"
+                // ),
                 subjectsCount: (await matiereService.count()).value,
             };
             res.status(200).json(result);

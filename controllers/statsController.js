@@ -34,7 +34,7 @@ class statsController {
                     },
                     "%Y-%m"
                 ),
-                totalCharges: (await chargeService.amountSum()).value,
+                totalCharges: 0, //(await chargeService.amountSum()).value,
                 totalChargesByMonth: await chargeService.amountSumByDate(
                     {},
                     "%Y-%m"

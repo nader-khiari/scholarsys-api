@@ -17,7 +17,6 @@ class chargeService {
                             ),
                             0
                         ),
-
                         "int"
                     ),
                     "value",

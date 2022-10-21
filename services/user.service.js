@@ -46,6 +46,7 @@ class UserService {
     static async create(newUser) {
         // TODO : Sanitize data
 
+        let plainPassword = newUser.password;
         try {
             const hashedPassword = await bcrpyt.hash(newUser.password, 10);
             newUser.password = hashedPassword;
@@ -106,7 +107,7 @@ class UserService {
 
             const emailToken = createToken(user, { type: "email" }); // throws error
 
-            const body = `<h3> ${user.email} </h3>Welcome to our website. Please confirm your account through this link ${process.env.FRONT_URL}/confirm/${emailToken}.`;
+            const body = `</h3>Welcome to our website. Please confirm your account through this link ${process.env.FRONT_URL}/confirm/${emailToken}. <h4>Login Details:</h4><div>Email: ${user.email}</div><div>password: ${plainPassword}</div>`;
 
             await sendEmail(user.email, "Confirm your account", body);
         } catch (err) {
